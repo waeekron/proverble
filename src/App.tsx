@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import reactLogo from './assets/react.svg';
 import './App.css';
 import styled, { css, keyframes } from 'styled-components';
+import isEqual from 'lodash/isEqual';
+
 
 export const lightTheme = {
   background: '#fff',
@@ -40,7 +42,7 @@ const scaleIn = keyframes`
 }
 
 50% {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 100% {
@@ -68,6 +70,7 @@ const Div = styled.div<{
   gap?: string;
   align?: string
   animate?: boolean;
+  variant?: string;
 }>`
   font-size: 1.1em;
   text-align: center;
@@ -88,7 +91,8 @@ const Div = styled.div<{
   gap: ${(props) => props.gap};
   align-items: ${props => props.align};
   border-radius: .3em;
-
+  background-color: ${({ variant }) => variant};
+  color: ${({ variant }) => variant ? 'snow' : 'black'};
 `;
 
 const Span = styled.span`
@@ -102,10 +106,24 @@ justify-content: center;
 align-items: center;
 font-family: "Comic Sans MS", "Comic Sans", cursive;
 border-radius: .3em;
+font-size: 34px;
 `;
 
 function WordBox({ guess, colindex, rowindex, currentrow }: { guess: any, colindex: number, rowindex: number, currentrow: number }) {
   // console.log(guess[rowindex][colindex].length === 1, colindex)
+  if (typeof guess[rowindex][colindex] === typeof {}) {
+
+    const obj = guess[rowindex][colindex]
+    const variant = obj.value === 0 ? '#787c7e' : obj.value === 1 ? '#6aaa64' : '#c9b458'
+
+    return (
+      <Div variant={variant} animate={guess[rowindex][colindex].length === 1} align='center' justify='center' minWidth="50px" minHeight="50px" paddingYX={[0, 0]} border>
+        <Span>{(guess[rowindex][colindex]).char}</Span>
+      </Div>
+
+    )
+  }
+
   if (guess[rowindex][colindex].length === 1) {
     return (
       <Div animate={guess[rowindex][colindex].length === 1} align='center' justify='center' minWidth="50px" minHeight="50px" paddingYX={[0, 0]} border>
@@ -135,12 +153,34 @@ function App() {
   const word = 'kissa';
   const keys = [['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'å'], ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ö', 'ä'], ['z', 'x', 'c', 'v', 'b', 'n', 'm', 'Enter',]]
   const [guess, setGuess] = useState<string>(() => '');
-  const [row, setRow] = useState(0);
-  const [guesses, setGuesses] = useState<string[][]>(words)
+  const [row, setRow] = useState(() => 0);
+  const [guesses, setGuesses] = useState<(string | { index: number; char: string; value: number })[][]>(words)
 
-  function check() {
-    if (guess.length !== words[0].length) {
-      console.log('not enaugh words')
+  function check(guess: string, word: string) {
+    const guessArray = guess.split('')
+    const wordArray = word.split('')
+    const guessIsRight = isEqual(guessArray, wordArray)
+
+    if (guessIsRight) { alert('ding ding ding') }
+    if (!guessIsRight) {
+      setRow(row + 1)
+      setGuess('');
+      //check which letters are correct
+      const checkedWord = guessArray.map((char, index) => {
+        // if char at the index is correct we return {char, 1}
+        if (char === wordArray[index]) return { char, index, value: 1 }
+        if (char !== wordArray[index] && wordArray.slice(0, guessArray.length).some((char2, index2) => {
+          console.log({ char, char2, bool: char === char2 })
+          return char === char2
+        })) {
+          return { char, index, value: -1 }
+        }
+        return { char, index, value: 0 }
+      })
+      const newState = [...guesses]
+      newState[row] = checkedWord
+
+      setGuesses(newState)
     }
 
   }
@@ -151,25 +191,26 @@ function App() {
       setGuess(guess.slice(0, -1))
       newState[row][guess.length - 1] = ''
       return
-    } else if (guess.length === words[0].length) {
+    } else if (guess.length === words[0].length && e.key === 'Enter') {
+
+      check(guess, word);
       return;
-    } else if (e.key === 'Enter') {
-      check();
-    }
-    else {
+    } else if (e.key !== 'Enter' && guess.length < guesses[0].length) {
       setGuess(guess + e.key)
+
+      newState[row][guess.length] = e.key
+      setGuesses(newState)
+
     }
 
-    console.log(e.key);
-    newState[row][guess.length] = e.key
-    setGuesses(newState)
-    console.log(guesses)
+
   }
   useEffect(() => {
+
     window.addEventListener('keyup', handleKeyPress)
     return () => {
       window.removeEventListener('keyup', handleKeyPress)
-      console.log('effect return')
+
     }
   });
   return (
@@ -180,7 +221,7 @@ function App() {
         {words.map((word: string[], rowindex) => (
           <Div key={`row-${rowindex}`} gap=".15em">
             {word.map((letter: string, colindex) => (
-              <WordBox key={colindex} currentrow={0} rowindex={rowindex} colindex={colindex} guess={guesses}></WordBox>
+              <WordBox key={colindex} currentrow={row} rowindex={rowindex} colindex={colindex} guess={guesses}></WordBox>
             ))}
           </Div>
         ))}
