@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import reactLogo from './assets/react.svg';
 import './App.css';
 import styled, { css, keyframes } from 'styled-components';
 import isEqual from 'lodash/isEqual';
@@ -38,11 +37,11 @@ const fadeIn = keyframes`
 
 const scaleIn = keyframes`
 0% {
-  transform: scale(1);
+  transform: scale(1.1);
 }
 
 50% {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 100% {
@@ -57,7 +56,7 @@ const animation = (props: any) =>
 
 const animation2 = (props: any) =>
   css`
-    ${scaleIn} .2s ease-in-out;
+    ${scaleIn} .2s ease-in;
   `
 
 const Div = styled.div<{
@@ -93,6 +92,7 @@ const Div = styled.div<{
   border-radius: .3em;
   background-color: ${({ variant }) => variant};
   color: ${({ variant }) => variant ? 'snow' : 'black'};
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
 `;
 
 const Span = styled.span`
@@ -108,6 +108,12 @@ font-family: "Comic Sans MS", "Comic Sans", cursive;
 border-radius: .3em;
 font-size: 34px;
 `;
+
+const Proverb = styled.div`
+  text-transform: none;
+`;
+
+
 
 function WordBox({ guess, colindex, rowindex, currentrow }: { guess: any, colindex: number, rowindex: number, currentrow: number }) {
   // console.log(guess[rowindex][colindex].length === 1, colindex)
@@ -214,19 +220,25 @@ function App() {
     }
   });
   return (
-    <Div justify="center" flexDirection="column">
-      <h1>Turdle</h1>
-      guess: {guess}
-      <Div justify="spaceAround" flexDirection="column">
-        {words.map((word: string[], rowindex) => (
-          <Div key={`row-${rowindex}`} gap=".15em">
-            {word.map((letter: string, colindex) => (
-              <WordBox key={colindex} currentrow={row} rowindex={rowindex} colindex={colindex} guess={guesses}></WordBox>
-            ))}
-          </Div>
-        ))}
+    <>
+      <header>
+        <h1>Sanonta</h1>
+      </header>
+      <Div justify="center" flexDirection="column">
+
+        <Proverb>Laskee kuin ______ häntä</Proverb>
+        <Div justify="spaceAround" flexDirection="column">
+          {words.map((word: string[], rowindex) => (
+            <Div key={`row-${rowindex}`} gap=".15em">
+              {word.map((letter: string, colindex) => (
+                <WordBox key={colindex} currentrow={row} rowindex={rowindex} colindex={colindex} guess={guesses}></WordBox>
+              ))}
+            </Div>
+          ))}
+        </Div>
       </Div>
-    </Div>
+    </>
+
   );
 }
 
