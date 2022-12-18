@@ -18,7 +18,6 @@ const Global = createGlobalStyle`
         font-size: 16px;
         font-family: 'Comic Sans MS', 'Comic Sans', cursive;
     }
-
 `;
 
 export default Global;

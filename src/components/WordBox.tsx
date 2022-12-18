@@ -18,7 +18,7 @@ const WordBox: React.FC<WordBoxProps> = ({
   if (typeof guess[rowindex][colindex] === typeof {}) {
     const obj = guess[rowindex][colindex];
     const variant =
-      obj.value === 0 ? '#787c7e' : obj.value === 1 ? '#6aaa64' : '#c9b458';
+      obj.value === 0 ? 'wrong' : obj.value === 1 ? 'correct' : 'almost';
 
     return (
       <Div

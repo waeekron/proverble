@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
-import styled, { css, keyframes } from 'styled-components';
+import styled, { css, keyframes, ThemeProvider } from 'styled-components';
 import isEqual from 'lodash/isEqual';
 import WordBox from './components/WordBox';
 import Header from './components/Header';
 import Global from './styles/global';
 import KeyBoard from './components/KeyBoard';
+import { Letter } from './types';
+import { keys } from './utils/constants';
+import { base, light } from './styles/themes';
 
 export const lightTheme = {
   background: '#fff',
@@ -29,39 +31,54 @@ const toggleTheme = styled.button`
   border-radius: 5px;
   font-size: 1.5rem;
 `;
-const fadeIn = keyframes`
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-`;
+// const fadeIn = keyframes`
+//   0% {
+//     opacity: 0;
+//   }
+//   100% {
+//     opacity: 1;
+//   }
+// `;
 
+// const scaleIn = keyframes`
+// 0% {
+//   transform: scale(1.1);
+// }
+
+// 50% {
+//   transform: scale(2.05);
+// }
+
+// 100% {
+//   transform: scale(1)
+// }
+// `;
+
+// const animation = (props: any) =>
+//   css`
+//     ${fadeIn} ${props.animationLength} infinite alternate;
+//   `;
+
+// const animation2 = (props: any) =>
+//   css`
+//     ${scaleIn} 2s ease-in;
+//   `;
 const scaleIn = keyframes`
 0% {
-  transform: scale(1.1);
+  transform: rotateY(50deg);
 }
-
 50% {
-  transform: scale(1.05);
+   transform: rotateX(180deg);
 }
-
 100% {
-  transform: scale(1)
+ transform: rotateX(0deg);
 }
+
 `;
-
-const animation = (props: any) =>
+export const animation2 = (props: any) =>
   css`
-    ${fadeIn} ${props.animationLength} infinite alternate;
+    ${scaleIn} 1s ease-in;
   `;
-
-const animation2 = (props: any) =>
-  css`
-    ${scaleIn} .2s ease-in;
-  `;
-
 export const Div = styled.div<{
   flexDirection?: string;
   border?: boolean;
@@ -75,9 +92,10 @@ export const Div = styled.div<{
   variant?: string;
   width?: string;
 }>`
+  ${({ variant }) => !variant && `animation: ${animation2};`};
+  animation: ${({ variant }) => (variant ? animation2 : 'none')};
   font-size: 1.1em;
   text-align: center;
-  color: palevioletred;
   border: ${(props) => (props.border ? '1px solid lightgrey' : 'none')};
   padding: ${(props) =>
     props.paddingYX
@@ -89,15 +107,23 @@ export const Div = styled.div<{
   margin: 0.1em auto;
   text-transform: capitalize;
   color: black;
-  min-width: ${(props) => props.minWidth};
+  min-width: ${(props) => props.minWidth || 'fit-content'};
   min-height: ${(props) => props.minHeight};
   gap: ${(props) => props.gap};
   align-items: ${(props) => props.align};
-  border-radius: 0.3em;
-  background-color: ${({ variant }) => variant};
-  color: ${({ variant }) => (variant ? 'snow' : 'black')};
+  border-radius: 0.25em;
+  background-color: ${({ variant, theme }) =>
+    variant === 'wrong'
+      ? theme.colors.wrong
+      : variant === 'almost'
+      ? theme.colors.almost
+      : variant === 'correct'
+      ? theme.colors.correct
+      : theme.background};
+  color: ${({ variant, theme }) => (!variant ? theme.colors.text : 'snow')};
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
-  width: ${({ width }) => width};
+  width: ${({ width }) => width || 'auto'};
+  transition: all 0.3s ease-in;
 `;
 
 const Proverb = styled.div`
@@ -105,7 +131,12 @@ const Proverb = styled.div`
 `;
 
 const Container = styled.div`
+  height: 100dvh;
+  max-width: 500px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `;
 
 /* function WordBox({
@@ -175,6 +206,7 @@ const Container = styled.div`
 //const words: string[] = ['kissa', 'koira', 'laulu', 'lukki'];
 
 function App() {
+  const theme = { ...base, ...light };
   const words = [
     ['', '', '', '', ''],
     ['', '', '', '', ''],
@@ -191,42 +223,67 @@ function App() {
     useState<(string | { index: number; char: string; value: number })[][]>(
       words
     );
-
+  const [guessedLetters, setGuessedLetters] = useState(
+    new Map<Letter, 'wrong' | 'almost' | 'correct'>()
+  );
   function check(guess: string, word: string) {
-    const guessArray = guess.split('');
+    const guessArray: Letter[] = guess.split('').map((str) => {
+      if (isAllowedKey(str)) return str as Letter;
+      throw new Error('Not a valid letter');
+    });
+
     const wordArray = word.split('');
     const guessIsRight = isEqual(guessArray, wordArray);
 
-    if (guessIsRight) {
-      alert('ding ding ding');
-    }
-    if (!guessIsRight) {
-      setRow(row + 1);
-      setGuess('');
-      //check which letters are correct
-      const checkedWord = guessArray.map((char, index) => {
-        // if char at the index is correct we return {char, 1}
-        if (char === wordArray[index]) return { char, index, value: 1 };
-        if (
-          char !== wordArray[index] &&
-          wordArray.slice(0, guessArray.length).some((char2, index2) => {
-            console.log({ char, char2, bool: char === char2 });
-            return char === char2;
-          })
-        ) {
-          return { char, index, value: -1 };
-        }
-        return { char, index, value: 0 };
-      });
-      const newState = [...guesses];
-      newState[row] = checkedWord;
+    let checkedWord;
 
-      setGuesses(newState);
+    setRow(row + 1);
+    setGuess('');
+    //check which letters are correct
+    checkedWord = guessArray.map((char, index) => {
+      // if char at the index is correct we return {char, 1}
+      if (char === wordArray[index]) return { char, index, value: 1 };
+      if (
+        char !== wordArray[index] &&
+        wordArray.slice(0, guessArray.length).some((char2, index2) => {
+          // console.log({ char, char2, bool: char === char2 });
+          return char === char2;
+        })
+      ) {
+        return { char, index, value: -1 };
+      }
+      return { char, index, value: 0 };
+    });
+    const newState = [...guesses];
+    newState[row] = checkedWord;
+
+    setGuesses(newState);
+
+    const newGuessedLetters = new Map(guessedLetters);
+    if (checkedWord) {
+      checkedWord
+        .map((guess) => guess as { value: number; char: Letter; index: number })
+        .forEach((guess) => {
+          console.log(guess);
+          const variant =
+            guess.value === 1
+              ? 'correct'
+              : guess.value === 0
+              ? 'wrong'
+              : 'almost';
+          newGuessedLetters.set(guess.char, variant);
+        });
     }
+    setGuessedLetters(newGuessedLetters);
+    if (guessIsRight) setRow(-1);
   }
-
+  console.log(guessedLetters);
+  function isAllowedKey(key: string): boolean {
+    const isAllowed = keys.find((k) => k === key);
+    return !!isAllowed;
+  }
   function handleKeyPress(e: KeyboardEvent) {
-    console.log(e.key);
+    if (!isAllowedKey(e.key)) return;
     const newState = [...guesses];
     if (e.key === 'Backspace') {
       setGuess(guess.slice(0, -1));
@@ -249,29 +306,37 @@ function App() {
     };
   });
   return (
-    <Container>
-      <Global />
-
-      <Div justify="center" flexDirection="column">
-        <Div justify="spaceAround" flexDirection="column">
-          <Proverb>Laskee kuin ______ häntä</Proverb>
-          {words.map((word: string[], rowindex) => (
-            <Div key={`row-${rowindex}`} gap=".15em">
-              {word.map((letter: string, colindex) => (
-                <WordBox
-                  key={colindex}
-                  currentrow={row}
-                  rowindex={rowindex}
-                  colindex={colindex}
-                  guess={guesses}
-                />
-              ))}
+    <ThemeProvider theme={theme}>
+      <Div justify="space-around" width="100dvw">
+        <Global />
+        <Container>
+          <Div justify="center" flexDirection="column">
+            <Div minHeight="50vh" flexDirection="column">
+              <Proverb>Laskee kuin ______ häntä</Proverb>
+              <Div justify="spaceAround" flexDirection="column">
+                {words.map((word: string[], rowindex) => (
+                  <Div key={`row-${rowindex}`} gap=".15em">
+                    {word.map((letter: string, colindex) => (
+                      <WordBox
+                        key={colindex}
+                        currentrow={row}
+                        rowindex={rowindex}
+                        colindex={colindex}
+                        guess={guesses}
+                      />
+                    ))}
+                  </Div>
+                ))}
+              </Div>{' '}
             </Div>
-          ))}
-          <KeyBoard />
-        </Div>
+          </Div>
+          <KeyBoard
+            guessedLetters={guessedLetters}
+            handleKeyPress={handleKeyPress}
+          />{' '}
+        </Container>
       </Div>
-    </Container>
+    </ThemeProvider>
   );
 }
 

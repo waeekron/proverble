@@ -1,24 +1,26 @@
 import styled, { keyframes, css } from 'styled-components';
 
 const scaleIn = keyframes`
-0% {
-  transform: scale(1);
-}
+  0% {
+    opacity: .9;
+    
+    border-radius: 20%;
+  }
+  50% {    
+    border-radius: 10%;
+  }
+  100% {
+    opacity:1;
+  }
 
-50% {
-  transform: scale(1.05);
-}
-
-100% {
-  transform: scale(1)
-}
 `;
-const animation2 = (props: any) =>
+export const animation2 = (props: any) =>
   css`
-    ${scaleIn} .2s ease-in;
+    ${scaleIn} 250ms ease-in-out;
   `;
 const Span = styled.span`
   animation: ${animation2};
+  animation-fill-mode: forwards;
   width: 100%;
   height: 100%;
   margint-top: 1em;
@@ -27,7 +29,7 @@ const Span = styled.span`
   justify-content: center;
   align-items: center;
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
-  border-radius: 0.3em;
+  border-radius: 20%;
   font-size: 1.1em;
 `;
 
