@@ -21,16 +21,16 @@ export const animation2 = (props: any) =>
 const Span = styled.span`
   animation: ${animation2};
   animation-fill-mode: forwards;
-  width: 100%;
-  height: 100%;
+  min-width: inherit;
+  min-height: inherit;
   margint-top: 1em;
-  border: 1px solid black;
+  border: ${({ theme }) => `1px solid ${theme.border}`};
   display: flex;
   justify-content: center;
   align-items: center;
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
   border-radius: 20%;
-  font-size: 1.1em;
+  font-size: 1em;
 `;
 
 interface AnimatedLetterProps {

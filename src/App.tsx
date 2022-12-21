@@ -2,221 +2,36 @@ import React, { useEffect, useState } from 'react';
 import styled, { css, keyframes, ThemeProvider } from 'styled-components';
 import isEqual from 'lodash/isEqual';
 import WordBox from './components/WordBox';
-import Header from './components/Header';
+import Appbar, { L } from './components/Appbar';
 import Global from './styles/global';
 import KeyBoard from './components/KeyBoard';
 import { Letter } from './types';
 import { keys } from './utils/constants';
-import { base, light } from './styles/themes';
-
-export const lightTheme = {
-  background: '#fff',
-  color: '#1d1f28',
-  buttonBg: '#c5718d'
-};
-
-export const darkTheme = {
-  background: '#1d1f28',
-  color: '#fafafa',
-  buttonBg: '#515d90'
-};
-//TODO light/dark theme
-const toggleTheme = styled.button`
-  font-family: 'Monaco', monospace;
-  cursor: pointer;
-  border: none;
-  background-color: ${({ theme }) => theme.buttonBg};
-  color: #fff;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 1.5rem;
-`;
-// const fadeIn = keyframes`
-//   0% {
-//     opacity: 0;
-//   }
-//   100% {
-//     opacity: 1;
-//   }
-// `;
-
-// const scaleIn = keyframes`
-// 0% {
-//   transform: scale(1.1);
-// }
-
-// 50% {
-//   transform: scale(2.05);
-// }
-
-// 100% {
-//   transform: scale(1)
-// }
-// `;
-
-// const animation = (props: any) =>
-//   css`
-//     ${fadeIn} ${props.animationLength} infinite alternate;
-//   `;
-
-// const animation2 = (props: any) =>
-//   css`
-//     ${scaleIn} 2s ease-in;
-//   `;
-const scaleIn = keyframes`
-0% {
-  transform: rotateY(50deg);
-}
-50% {
-   transform: rotateX(180deg);
-}
-100% {
- transform: rotateX(0deg);
-}
-
-`;
-export const animation2 = (props: any) =>
-  css`
-    ${scaleIn} 1s ease-in;
-  `;
-export const Div = styled.div<{
-  flexDirection?: string;
-  border?: boolean;
-  justify?: string;
-  paddingYX?: number[];
-  minHeight?: string;
-  minWidth?: string;
-  gap?: string;
-  align?: string;
-  animate?: boolean;
-  variant?: string;
-  width?: string;
-}>`
-  ${({ variant }) => !variant && `animation: ${animation2};`};
-  animation: ${({ variant }) => (variant ? animation2 : 'none')};
-  font-size: 1.1em;
-  text-align: center;
-  border: ${(props) => (props.border ? '1px solid lightgrey' : 'none')};
-  padding: ${(props) =>
-    props.paddingYX
-      ? `${props.paddingYX[0]}em ${props.paddingYX[1]}em`
-      : 'auto'};
-  display: flex;
-  flex-direction: ${(props) => props.flexDirection};
-  justify-content: ${(props) => props.justify};
-  margin: 0.1em auto;
-  text-transform: capitalize;
-  color: black;
-  min-width: ${(props) => props.minWidth || 'fit-content'};
-  min-height: ${(props) => props.minHeight};
-  gap: ${(props) => props.gap};
-  align-items: ${(props) => props.align};
-  border-radius: 0.25em;
-  background-color: ${({ variant, theme }) =>
-    variant === 'wrong'
-      ? theme.colors.wrong
-      : variant === 'almost'
-      ? theme.colors.almost
-      : variant === 'correct'
-      ? theme.colors.correct
-      : theme.background};
-  color: ${({ variant, theme }) => (!variant ? theme.colors.text : 'snow')};
-  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
-  width: ${({ width }) => width || 'auto'};
-  transition: all 0.3s ease-in;
-`;
-
-const Proverb = styled.div`
-  text-transform: none;
-`;
-
-const Container = styled.div`
-  height: 100dvh;
-  max-width: 500px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-/* function WordBox({
-  guess,
-  colindex,
-  rowindex,
-  currentrow
-}: {
-  guess: any;
-  colindex: number;
-  rowindex: number;
-  currentrow: number;
-}) {
-  // console.log(guess[rowindex][colindex].length === 1, colindex)
-  if (typeof guess[rowindex][colindex] === typeof {}) {
-    const obj = guess[rowindex][colindex];
-    const variant =
-      obj.value === 0 ? '#787c7e' : obj.value === 1 ? '#6aaa64' : '#c9b458';
-
-    return (
-      <Div
-        variant={variant}
-        animate={guess[rowindex][colindex].length === 1}
-        align="center"
-        justify="center"
-        minWidth="50px"
-        minHeight="50px"
-        paddingYX={[0, 0]}
-        border
-      >
-        <Span>{guess[rowindex][colindex].char}</Span>
-      </Div>
-    );
-  }
-
-  if (guess[rowindex][colindex].length === 1) {
-    return (
-      <Div
-        animate={guess[rowindex][colindex].length === 1}
-        align="center"
-        justify="center"
-        minWidth="50px"
-        minHeight="50px"
-        paddingYX={[0, 0]}
-        border
-      >
-        <Span>{guess[rowindex][colindex]}</Span>
-      </Div>
-    );
-  }
-  return (
-    <Div
-      animate={guess[rowindex][colindex].length === 1}
-      align="center"
-      justify="center"
-      minWidth="50px"
-      minHeight="50px"
-      paddingYX={[0, 0]}
-      border
-    >
-      {/* {guess[rowindex][colindex]} }
-    </Div>
-  );
-} 
-*/
-
-//const words: string[] = ['kissa', 'koira', 'laulu', 'lukki'];
+import { base, dark, light } from './styles/themes';
+import { Div, Container, Proverb } from './styles/styledComponents';
 
 function App() {
-  const theme = { ...base, ...light };
-  const words = [
-    ['', '', '', '', ''],
-    ['', '', '', '', ''],
-    ['', '', '', '', ''],
-    ['', '', '', '', ''],
-    ['', '', '', '', ''],
-    ['', '', '', '', '']
-  ];
+  const [currentTheme, setCurrentTheme] = useState(() => ({
+    ...base,
+    ...light,
+    name: 'light'
+  }));
+  function changeTheme() {
+    console.log('we are here now and the theme is:', currentTheme.name);
+    if (currentTheme.name === 'light')
+      setCurrentTheme({ ...base, ...dark, name: 'dark' });
+    if (currentTheme.name === 'dark')
+      setCurrentTheme({ ...base, ...light, name: 'light' });
+  }
+  let words: string[][] = [];
   const word = 'kissa';
-
+  for (let i = 0; i < 6; i++) {
+    const temp = [];
+    for (let j = 0; j < word.length; j++) {
+      temp.push('');
+    }
+    words.push(temp);
+  }
   const [guess, setGuess] = useState<string>(() => '');
   const [row, setRow] = useState(() => 0);
   const [guesses, setGuesses] =
@@ -305,17 +120,29 @@ function App() {
       window.removeEventListener('keyup', handleKeyPress);
     };
   });
+  function getRandomColor(): string {
+    const colors = ['#4285F4', '#DB4437', '#F4B400', '#0F9D58'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+  const blanks = new Array(5)
+    .fill(1, 0, 5)
+    .map((el) => <L color={getRandomColor()} borderWidth={4} />);
+
+  console.log(blanks);
   return (
-    <ThemeProvider theme={theme}>
-      <Div justify="space-around" width="100dvw">
+    <ThemeProvider theme={currentTheme}>
+      <Div flexDirection="column" align="center" justify="space-around">
         <Global />
+        <Appbar changeTheme={changeTheme} theme={currentTheme} />
         <Container>
-          <Div justify="center" flexDirection="column">
+          <Div maxHeight="450px" justify="center" flexDirection="column">
             <Div minHeight="50vh" flexDirection="column">
-              <Proverb>Laskee kuin ______ häntä</Proverb>
+              <Proverb>
+                Itku pitkästä ilosta, {blanks} pitkään nauramisesta.
+              </Proverb>
               <Div justify="spaceAround" flexDirection="column">
                 {words.map((word: string[], rowindex) => (
-                  <Div key={`row-${rowindex}`} gap=".15em">
+                  <Div key={`row-${rowindex}`} marginY=".15em" gap=".15em">
                     {word.map((letter: string, colindex) => (
                       <WordBox
                         key={colindex}

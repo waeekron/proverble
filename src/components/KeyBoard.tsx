@@ -2,26 +2,7 @@ import styled from 'styled-components';
 import Key from './Key';
 import { HiArrowLeft } from 'react-icons/hi';
 import { Letter } from '../types';
-const StyledKeyBoard = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-items: center;
-  gap: 0.2em;
-  margin-bottom: 2em;
-  width: 100%;
-`;
-
-const StyledKeyRow = styled.div`
-  padding: 0.1em;
-  display: flex;
-  gap: 0.2em;
-  width: 100%;
-`;
-
-const Span = styled.span<{}>`
-  // flex: 1;
-`;
+import { StyledKeyBoard, StyledKeyRow, Span } from '../styles/styledComponents';
 
 interface KeyBoradProps {
   handleKeyPress: (e: KeyboardEvent) => void;

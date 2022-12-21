@@ -1,4 +1,4 @@
-import { Div } from '../App';
+import { Div } from '../styles/styledComponents';
 import AnimatedLetter from './AnimatedLetter';
 
 interface WordBoxProps {
@@ -15,6 +15,8 @@ const WordBox: React.FC<WordBoxProps> = ({
   rowindex,
   currentrow
 }) => {
+  const len = 500 / (guess.length + 2);
+  const sideLength = `${500 / (guess[0].length + 2)}px`;
   if (typeof guess[rowindex][colindex] === typeof {}) {
     const obj = guess[rowindex][colindex];
     const variant =
@@ -26,8 +28,11 @@ const WordBox: React.FC<WordBoxProps> = ({
         animate={guess[rowindex][colindex].length === 1}
         align="center"
         justify="center"
-        minWidth="50px"
-        minHeight="50px"
+        minWidth={len > 50 ? '50px ' : sideLength}
+        minHeight={len > 50 ? '50px ' : sideLength}
+        maxWidth={'50px'}
+        maxHeight={'50px'}
+        width="50px"
         paddingYX={[0, 0]}
       >
         <AnimatedLetter animate={rowindex === currentrow}>
@@ -42,8 +47,11 @@ const WordBox: React.FC<WordBoxProps> = ({
       animate={guess[rowindex][colindex].length === 1}
       align="center"
       justify="center"
-      minWidth="50px"
-      minHeight="50px"
+      minWidth={len > 50 ? '50px ' : sideLength}
+      minHeight={len > 50 ? '50px ' : sideLength}
+      maxWidth={'50px'}
+      maxHeight={'50px'}
+      width="50px"
       paddingYX={[0, 0]}
       border={!guess[rowindex][colindex]}
     >
