@@ -1,5 +1,3 @@
-import { Letter } from '../types';
-
 export const keys = [
   'q',
   'w',

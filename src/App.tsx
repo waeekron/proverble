@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import styled, { css, keyframes, ThemeProvider } from 'styled-components';
+import { useEffect, useState } from 'react';
+import { ThemeProvider } from 'styled-components';
 import isEqual from 'lodash/isEqual';
-import WordBox from './components/WordBox';
-import Appbar, { L } from './components/Appbar';
+import WordBox from './components/WordBox/WordBox';
+import Appbar from './components/Appbar/Appbar';
 import Global from './styles/global';
-import KeyBoard from './components/KeyBoard';
+import KeyBoard from './components/KeyBoard/KeyBoard';
 import { Letter } from './types';
 import { keys } from './utils/constants';
 import { base, dark, light } from './styles/themes';
-import { Div, Container, Proverb } from './styles/styledComponents';
+import { Div, Container, Proverb, L } from './styles/styled';
 
 function App() {
   const [currentTheme, setCurrentTheme] = useState(() => ({
@@ -17,7 +17,6 @@ function App() {
     name: 'light'
   }));
   function changeTheme() {
-    console.log('we are here now and the theme is:', currentTheme.name);
     if (currentTheme.name === 'light')
       setCurrentTheme({ ...base, ...dark, name: 'dark' });
     if (currentTheme.name === 'dark')
@@ -61,7 +60,6 @@ function App() {
       if (
         char !== wordArray[index] &&
         wordArray.slice(0, guessArray.length).some((char2, index2) => {
-          // console.log({ char, char2, bool: char === char2 });
           return char === char2;
         })
       ) {
@@ -79,7 +77,6 @@ function App() {
       checkedWord
         .map((guess) => guess as { value: number; char: Letter; index: number })
         .forEach((guess) => {
-          console.log(guess);
           const variant =
             guess.value === 1
               ? 'correct'
@@ -92,7 +89,6 @@ function App() {
     setGuessedLetters(newGuessedLetters);
     if (guessIsRight) setRow(-1);
   }
-  console.log(guessedLetters);
   function isAllowedKey(key: string): boolean {
     const isAllowed = keys.find((k) => k === key);
     return !!isAllowed;
@@ -126,12 +122,13 @@ function App() {
   }
   const blanks = new Array(5)
     .fill(1, 0, 5)
-    .map((el) => <L color={getRandomColor()} borderWidth={4} />);
+    .map((el, index) => (
+      <L key={index} color={getRandomColor()} borderWidth={4} />
+    ));
 
-  console.log(blanks);
   return (
     <ThemeProvider theme={currentTheme}>
-      <Div flexDirection="column" align="center" justify="space-around">
+      <Div flexDirection="column" align="center" justify="space-between">
         <Global />
         <Appbar changeTheme={changeTheme} theme={currentTheme} />
         <Container>
@@ -145,7 +142,7 @@ function App() {
                   <Div key={`row-${rowindex}`} marginY=".15em" gap=".15em">
                     {word.map((letter: string, colindex) => (
                       <WordBox
-                        key={colindex}
+                        key={`col-${colindex}-${letter}`}
                         currentrow={row}
                         rowindex={rowindex}
                         colindex={colindex}

@@ -1,4 +1,4 @@
-import { Div } from '../styles/styledComponents';
+import { Div } from '../../styles/styled';
 import AnimatedLetter from './AnimatedLetter';
 
 interface WordBoxProps {

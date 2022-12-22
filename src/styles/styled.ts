@@ -37,19 +37,17 @@ export const Div = styled.div<{
   animation: ${({ variant }) => (variant ? rotateAnimation : 'none')};
   font-size: 1.1em;
   text-align: center;
-  border: ${(props) => (props.border ? '1px solid lightgrey' : 'none')};
-  padding: ${(props) =>
-    props.paddingYX
-      ? `${props.paddingYX[0]}em ${props.paddingYX[1]}em`
-      : 'auto'};
+  border: ${({ border }) => (border ? '1px solid lightgrey' : 'none')};
+  padding: ${({ paddingYX }) =>
+    paddingYX ? `${paddingYX[0]}em ${paddingYX[1]}em` : 'auto'};
   display: flex;
-  flex-direction: ${(props) => props.flexDirection};
-  justify-content: ${(props) => props.justify};
+  flex-direction: ${({ flexDirection }) => flexDirection};
+  justify-content: ${({ justify }) => justify};
   margin: ${({ marginY }) => (marginY || 'auto') + ' auto'};
   text-transform: capitalize;
   color: black;
-  min-width: ${(props) => props.minWidth || 'fit-content'};
-  min-height: ${(props) => props.minHeight};
+  min-width: ${({ minWidth }) => minWidth || 'fit-content'};
+  min-height: ${({ minHeight }) => minHeight};
   max-width: ${({ maxWidth }) => maxWidth};
   max-height: ${({ maxHeight }) => maxHeight};
   gap: ${(props) => props.gap};
@@ -73,7 +71,7 @@ export const Div = styled.div<{
 export const Proverb = styled.div`
   text-transform: none;
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 0em 1em;
   color: ${({ theme }) => theme.text};
 `;
@@ -86,46 +84,14 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: space-between;
 `;
-export const StyledKeyBoard = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-items: center;
-  gap: 0.2em;
-  margin-bottom: 1em;
-  width: 100%;
-  padding-left: 5px;
-  padding-right: 5px;
-`;
 
-export const StyledKeyRow = styled.div`
-  padding: 0.1em;
-  display: flex;
-  gap: 0.2em;
-  width: 100%;
-`;
-
-export const Span = styled.span<{}>`
-  // flex: 1;
-`;
-
-export const StyledKey = styled.div<{ variant: string }>`
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  border-radius: 10%;
-  padding: 0.3rem;
-  background: ${({ theme, variant }) => theme.colors[variant]};
-  cursor: pointer;
-  height: 50px;
-  flex: 1;
-  transition: background 0.3s ease-in;
-  color: ${({ theme }) => theme.colors.keyboard};
-  border: ${({ theme }) => `1px solid ${theme.border}`};
-  &: hover {
-    opacity: 0.8;
-    transform: scale(0.95);
-    transition: all 0.1s ease-in;
-  }
+export const L = styled.span<{ borderWidth?: number }>`
+  color: ${({ color }) => color};
+  display: inline-block;
+  border-bottom: ${({ borderWidth, color }) =>
+    `${borderWidth || 3}px solid ${color}`};
+  min-width: 1rem;
+  min-height: 1rem;
+  margin-right: 0.1em;
+  font-size: 1em;
 `;

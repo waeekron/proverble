@@ -1,4 +1,4 @@
-import { StyledKey } from '../styles/styledComponents';
+import { StyledKey } from './styles';
 
 const Key: React.FC<{
   children: React.ReactNode;

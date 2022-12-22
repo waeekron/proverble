@@ -1,8 +1,7 @@
-import styled from 'styled-components';
 import Key from './Key';
 import { HiArrowLeft } from 'react-icons/hi';
-import { Letter } from '../types';
-import { StyledKeyBoard, StyledKeyRow, Span } from '../styles/styledComponents';
+import { Letter } from '../../types';
+import { StyledKeyBoard, StyledKeyRow, Span } from './styles';
 
 interface KeyBoradProps {
   handleKeyPress: (e: KeyboardEvent) => void;
@@ -20,7 +19,6 @@ const KeyBoard = ({ handleKeyPress, guessedLetters }: KeyBoradProps) => {
     letter: Letter
   ): [variant: 'wrong' | 'almost' | 'correct' | 'notGuessed'] {
     const variant = guessedLetters.get(letter);
-    console.log(variant);
     return variant ? [variant] : ['notGuessed'];
   }
   return (

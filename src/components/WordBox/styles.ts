@@ -1,6 +1,6 @@
 import styled, { keyframes, css } from 'styled-components';
 
-const scaleIn = keyframes`
+const borderWave = keyframes`
   0% {
     opacity: .9;
     
@@ -14,12 +14,12 @@ const scaleIn = keyframes`
   }
 
 `;
-export const animation2 = (props: any) =>
+const borderWaveAnimation = (props: any) =>
   css`
-    ${scaleIn} 250ms ease-in-out;
+    ${borderWave} 250ms ease-in-out;
   `;
-const Span = styled.span`
-  animation: ${animation2};
+export const AnimatedSpan = styled.span`
+  animation: ${borderWaveAnimation};
   animation-fill-mode: forwards;
   min-width: inherit;
   min-height: inherit;
@@ -32,13 +32,3 @@ const Span = styled.span`
   border-radius: 20%;
   font-size: 1em;
 `;
-
-interface AnimatedLetterProps {
-  children: React.ReactNode;
-  animate: boolean;
-}
-
-const AnimatedLetter: React.FC<AnimatedLetterProps> = ({ children, animate }) =>
-  animate ? <Span>{children}</Span> : <>{children}</>;
-
-export default AnimatedLetter;
