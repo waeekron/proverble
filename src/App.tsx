@@ -6,38 +6,34 @@ import Appbar from './components/Appbar/Appbar';
 import Global from './styles/global';
 import KeyBoard from './components/KeyBoard/KeyBoard';
 import { Letter } from './types';
-import { base, dark, light } from './styles/themes';
+import { base, light } from './styles/themes';
 import { Div, Container, Proverb, L } from './styles/styled';
 import { isAllowedKey } from './utils/utils';
-
+import useScreenOrientation from './hooks/useScreenOrientation';
+import Orientation from './components/Orientation';
+const word = 'kissa';
 function App() {
   const [currentTheme, setCurrentTheme] = useState(() => ({
     ...base,
     ...light,
     name: 'light'
   }));
-
-  function changeTheme() {
-    if (currentTheme.name === 'light')
-      setCurrentTheme({ ...base, ...dark, name: 'dark' });
-    if (currentTheme.name === 'dark')
-      setCurrentTheme({ ...base, ...light, name: 'light' });
-  }
-
-  let words: string[][] = [];
-  const word = 'kissa';
-  for (let i = 0; i < 6; i++) {
-    const temp = [];
-    for (let j = 0; j < word.length; j++) {
-      temp.push('');
-    }
-    words.push(temp);
-  }
   const [guess, setGuess] = useState<string>(() => '');
   const [row, setRow] = useState(() => 0);
   const [guesses, setGuesses] = useState<
     (string | { index: number; char: string; value: number })[][]
-  >(() => words);
+  >(() => {
+    let words: string[][] = [];
+
+    for (let i = 0; i < word.length; i++) {
+      const temp = [];
+      for (let j = 0; j < word.length; j++) {
+        temp.push('');
+      }
+      words.push(temp);
+    }
+    return words;
+  });
   const [guessedLetters, setGuessedLetters] = useState(
     new Map<Letter, 'wrong' | 'almost' | 'correct'>()
   );
@@ -96,7 +92,7 @@ function App() {
       newState[row][guess.length - 1] = '';
       return;
     }
-    if (e.key === 'Enter' && guess.length === words[0].length) {
+    if (e.key === 'Enter' && guess.length === word.length) {
       check(guess, word);
       return;
     }
@@ -106,6 +102,7 @@ function App() {
       setGuesses(newState);
     }
   }
+
   useEffect(() => {
     window.addEventListener('keyup', handleKeyPress);
     return () => {
@@ -127,35 +124,38 @@ function App() {
     <ThemeProvider theme={currentTheme}>
       <Div flexDirection="column" align="center" justify="space-between">
         <Global />
-        <Appbar changeTheme={changeTheme} theme={currentTheme} />
-        <Container>
-          <Div maxHeight="450px" justify="center" flexDirection="column">
-            <Div minHeight="50vh" flexDirection="column">
-              <Proverb>
-                Itku pitkästä ilosta, {blanks} pitkään nauramisesta.
-              </Proverb>
-              <Div justify="spaceAround" flexDirection="column">
-                {words.map((word: string[], rowindex) => (
-                  <Div key={`row-${rowindex}`} marginY=".15em" gap=".15em">
-                    {word.map((letter: string, colindex) => (
-                      <WordBox
-                        key={`col-${colindex}-${letter}`}
-                        currentrow={row}
-                        rowindex={rowindex}
-                        colindex={colindex}
-                        guesses={guesses}
-                      />
-                    ))}
-                  </Div>
-                ))}
+        <Appbar setCurrentTheme={setCurrentTheme} currentTheme={currentTheme} />
+        <Orientation>
+          <Container>
+            <Div maxHeight="450px" justify="center" flexDirection="column">
+              <Div minHeight="50vh" flexDirection="column">
+                <Proverb>
+                  Itku pitkästä ilosta, {blanks} pitkään nauramisesta.
+                </Proverb>
+
+                <Div justify="spaceAround" flexDirection="column">
+                  {guesses.map((word, rowindex) => (
+                    <Div key={`row-${rowindex}`} marginY=".15em" gap=".15em">
+                      {word.map((letter, colindex) => (
+                        <WordBox
+                          key={`col-${colindex}-${letter}`}
+                          currentrow={row}
+                          rowindex={rowindex}
+                          colindex={colindex}
+                          guesses={guesses}
+                        />
+                      ))}
+                    </Div>
+                  ))}
+                </Div>
               </Div>
             </Div>
-          </Div>
-          <KeyBoard
-            guessedLetters={guessedLetters}
-            handleKeyPress={handleKeyPress}
-          />
-        </Container>
+            <KeyBoard
+              guessedLetters={guessedLetters}
+              handleKeyPress={handleKeyPress}
+            />
+          </Container>
+        </Orientation>
       </Div>
     </ThemeProvider>
   );

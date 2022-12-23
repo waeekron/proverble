@@ -2,19 +2,26 @@ import { HiOutlineSun, HiOutlineMoon } from 'react-icons/hi';
 import { useState, useRef } from 'react';
 import { AppbarContainer, Button, ButtonGroup, Logo, Split } from './styles';
 import { L } from '../../styles/styled';
-import styled from 'styled-components';
+import { base, dark, light } from '../../styles/themes';
 
 interface HeaderProps {
-  theme: any;
-  changeTheme: () => void;
+  currentTheme: any;
+  setCurrentTheme: any;
 }
 
-const Appbar: React.FC<HeaderProps> = ({ theme, changeTheme }) => {
+const Appbar: React.FC<HeaderProps> = ({ currentTheme, setCurrentTheme }) => {
   const [split, setSplit] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   function handleClick(): void {
     changeTheme();
     buttonRef.current?.blur();
+  }
+
+  function changeTheme() {
+    if (currentTheme.name === 'light')
+      setCurrentTheme({ ...base, ...dark, name: 'dark' });
+    if (currentTheme.name === 'dark')
+      setCurrentTheme({ ...base, ...light, name: 'light' });
   }
   return (
     <AppbarContainer>
@@ -40,7 +47,7 @@ const Appbar: React.FC<HeaderProps> = ({ theme, changeTheme }) => {
       </Logo>
       <ButtonGroup>
         <Button onClick={handleClick} ref={buttonRef}>
-          {theme.name === 'light' ? (
+          {currentTheme.name === 'light' ? (
             <HiOutlineMoon fill="#5a5a97" color="#5a5a97" size={'1.5rem'} />
           ) : (
             <HiOutlineSun fill="yellow" color="yellow" size="1.5rem" />

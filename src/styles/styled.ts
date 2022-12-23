@@ -32,6 +32,7 @@ export const Div = styled.div<{
   variant?: string;
   width?: string;
   marginY?: string;
+  height?: string;
 }>`
   ${({ variant }) => !variant && `animation: ${rotateAnimation};`};
   animation: ${({ variant }) => (variant ? rotateAnimation : 'none')};
@@ -64,6 +65,7 @@ export const Div = styled.div<{
   color: ${({ variant, theme }) => (variant ? 'white' : theme.text)};
   font-family: 'Comic Sans MS', 'Comic Sans', cursive;
   width: ${({ width }) => width || 'auto'};
+  height: ${({ height }) => height};
   transition: background 0.3s ease-in;
   max-height: 100dvh;
 `;
