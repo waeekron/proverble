@@ -88,8 +88,8 @@ export const Container = styled.div`
 export const L = styled.span<{ borderWidth?: number }>`
   color: ${({ color }) => color};
   display: inline-block;
-  border-bottom: ${({ borderWidth, color }) =>
-    `${borderWidth || 3}px solid ${color}`};
+  border-bottom: ${({ borderWidth, color, theme }) =>
+    `${borderWidth || 3}px solid ${color ? color : theme.border}`};
   min-width: 1rem;
   min-height: 1rem;
   margin-right: 0.1em;
