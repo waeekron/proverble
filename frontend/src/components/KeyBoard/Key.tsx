@@ -7,7 +7,11 @@ const Key: React.FC<{
 }> = ({ children, onClick, variant }) => {
   const [variantValue] = variant;
   return (
-    <StyledKey variant={variantValue} onClick={onClick}>
+    <StyledKey
+      disabled={variantValue === 'wrong'}
+      variant={variantValue}
+      onClick={onClick}
+    >
       {children}
     </StyledKey>
   );

@@ -9,9 +9,9 @@ import { Letter } from './types';
 import { base, light } from './styles/themes';
 import { Div, Container, Proverb, L } from './styles/styled';
 import { isAllowedKey } from './utils/utils';
-import useScreenOrientation from './hooks/useScreenOrientation';
 import Orientation from './components/Orientation';
 const word = 'kissa';
+
 function App() {
   const [currentTheme, setCurrentTheme] = useState(() => ({
     ...base,
@@ -132,7 +132,6 @@ function App() {
                 <Proverb>
                   Itku pitkästä ilosta, {blanks} pitkään nauramisesta.
                 </Proverb>
-
                 <Div justify="spaceAround" flexDirection="column">
                   {guesses.map((word, rowindex) => (
                     <Div key={`row-${rowindex}`} marginY=".15em" gap=".15em">

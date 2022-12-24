@@ -1,13 +1,18 @@
+import useIsMobile from '../hooks/useIsMobile';
 import useScreenOrientation from '../hooks/useScreenOrientation';
 import { Div } from '../styles/styled';
+
 type OrientationProps = {
   children: React.ReactNode;
 };
+
 export default function Orientation({ children }: OrientationProps) {
   const orientation = useScreenOrientation();
+  const isMobile = useIsMobile();
+
   return (
     <>
-      {orientation === 'portrait-primary' ? (
+      {orientation === 'portrait-primary' || !isMobile ? (
         children
       ) : (
         <Div width="100%" height="100vh" justify="space-around" align="center">
