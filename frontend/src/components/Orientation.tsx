@@ -9,7 +9,7 @@ type OrientationProps = {
 export default function Orientation({ children }: OrientationProps) {
   const orientation = useScreenOrientation();
   const isMobile = useIsMobile();
-
+  console.log(orientation);
   return (
     <>
       {orientation === 'portrait-primary' || !isMobile ? (
