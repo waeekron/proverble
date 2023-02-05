@@ -105,7 +105,7 @@ function App() {
     (async () => {
       const { content } = await proverbService.getToday();
       const c = content.split(' ');
-      const wordToGuess = c[Math.floor(c.length / 2)];
+      const wordToGuess = c[Math.floor(c.length / 2)].toLowerCase();
       setWordToGuess(wordToGuess);
       setProverb(content);
       setGuesses(() => {
