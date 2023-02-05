@@ -12,8 +12,6 @@ import { isAllowedKey } from './utils/utils';
 import Orientation from './components/Orientation';
 import proverbService from './services/proverb';
 
-// const word = 'kissa';
-
 function App() {
   const [wordToGuess, setWordToGuess] = useState('');
   const [proverb, setProverb] = useState('');
@@ -105,7 +103,7 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      const { content, id } = await proverbService.getToday();
+      const { content } = await proverbService.getToday();
       const c = content.split(' ');
       const wordToGuess = c[Math.floor(c.length / 2)];
       setWordToGuess(wordToGuess);
@@ -119,21 +117,30 @@ function App() {
           }
           words.push(temp);
         }
+
         return words;
       });
     })();
   }, []);
 
   const blanks = useMemo(() => {
-    return new Array(5).fill(1, 0, wordToGuess.length).map((_, index) => {
-      return (
-        <L key={index} borderWidth={2}>
-          {row === -1 ? wordToGuess[index] : ''}
-        </L>
-      );
-    });
-  }, [row]);
-  console.log(blanks);
+    return new Array(wordToGuess.length)
+      .fill(1, 0, wordToGuess.length)
+      .map((_, index) => {
+        return (
+          <L key={index} borderWidth={2}>
+            {row === -1 ? wordToGuess[index] : ''}
+          </L>
+        );
+      });
+  }, [row, wordToGuess]);
+
+  const hint = useMemo(() => {
+    const p = proverb.split(' ');
+    const start = p.slice(0, Math.floor(p.length / 2)).join(' ');
+    const end = p.slice(Math.floor(p.length / 2) + 1, p.length).join(' ');
+    return [start, end];
+  }, [proverb]);
   return (
     <ThemeProvider theme={currentTheme}>
       <Div flexDirection="column" align="center" justify="space-between">
@@ -144,8 +151,9 @@ function App() {
             <Div maxHeight="450px" justify="center" flexDirection="column">
               <Div minHeight="50vh" flexDirection="column">
                 <Proverb>
-                  {proverb}
-                  {/* Itku pitkästä ilosta, {blanks} pitkään nauramisesta. */}
+                  {hint[0] + ' '}
+                  {blanks}
+                  {' ' + hint[1]}
                 </Proverb>
                 <Div justify="spaceAround" flexDirection="column">
                   {guesses.map((word, rowindex) => (
