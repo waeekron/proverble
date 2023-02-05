@@ -10,9 +10,13 @@ import { base, light } from './styles/themes';
 import { Div, Container, Proverb, L } from './styles/styled';
 import { isAllowedKey } from './utils/utils';
 import Orientation from './components/Orientation';
-const word = 'kissa';
+import proverbService from './services/proverb';
+
+// const word = 'kissa';
 
 function App() {
+  const [wordToGuess, setWordToGuess] = useState('');
+  const [proverb, setProverb] = useState('');
   const [currentTheme, setCurrentTheme] = useState(() => ({
     ...base,
     ...light,
@@ -22,18 +26,7 @@ function App() {
   const [row, setRow] = useState(() => 0);
   const [guesses, setGuesses] = useState<
     (string | { index: number; char: string; value: number })[][]
-  >(() => {
-    let words: string[][] = [];
-
-    for (let i = 0; i < word.length; i++) {
-      const temp = [];
-      for (let j = 0; j < word.length; j++) {
-        temp.push('');
-      }
-      words.push(temp);
-    }
-    return words;
-  });
+  >([[]]);
   const [guessedLetters, setGuessedLetters] = useState(
     new Map<Letter, 'wrong' | 'almost' | 'correct'>()
   );
@@ -92,8 +85,8 @@ function App() {
       newState[row][guess.length - 1] = '';
       return;
     }
-    if (e.key === 'Enter' && guess.length === word.length) {
-      check(guess, word);
+    if (e.key === 'Enter' && guess.length === wordToGuess.length) {
+      check(guess, wordToGuess);
       return;
     }
     if (e.key !== 'Enter' && guess.length < guesses[0].length) {
@@ -110,16 +103,37 @@ function App() {
     };
   });
 
+  useEffect(() => {
+    (async () => {
+      const { content, id } = await proverbService.getToday();
+      const c = content.split(' ');
+      const wordToGuess = c[Math.floor(c.length / 2)];
+      setWordToGuess(wordToGuess);
+      setProverb(content);
+      setGuesses(() => {
+        let words: string[][] = [];
+        for (let i = 0; i < wordToGuess.length; i++) {
+          const temp = [];
+          for (let j = 0; j < wordToGuess.length; j++) {
+            temp.push('');
+          }
+          words.push(temp);
+        }
+        return words;
+      });
+    })();
+  }, []);
+
   const blanks = useMemo(() => {
-    return new Array(5).fill(1, 0, word.length).map((_, index) => {
+    return new Array(5).fill(1, 0, wordToGuess.length).map((_, index) => {
       return (
         <L key={index} borderWidth={2}>
-          {row === -1 ? word[index] : ''}
+          {row === -1 ? wordToGuess[index] : ''}
         </L>
       );
     });
   }, [row]);
-
+  console.log(blanks);
   return (
     <ThemeProvider theme={currentTheme}>
       <Div flexDirection="column" align="center" justify="space-between">
@@ -130,7 +144,8 @@ function App() {
             <Div maxHeight="450px" justify="center" flexDirection="column">
               <Div minHeight="50vh" flexDirection="column">
                 <Proverb>
-                  Itku pitkästä ilosta, {blanks} pitkään nauramisesta.
+                  {proverb}
+                  {/* Itku pitkästä ilosta, {blanks} pitkään nauramisesta. */}
                 </Proverb>
                 <Div justify="spaceAround" flexDirection="column">
                   {guesses.map((word, rowindex) => (

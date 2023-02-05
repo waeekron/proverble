@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_USER=springuser
+      - MYSQL_PASSWORD=ThePassword
+      - MYSQL_DATABASE=proverble
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      # port exposed : mysql port running inside container
+      - '3306:3306'
+    volumes:
+      # for more info look up: bind mount volume definition in Docker Compose
+      - ./data.sql:/docker-entrypoint-initdb.d/data.sql
