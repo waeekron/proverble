@@ -1,6 +1,7 @@
 # proverble
 
 Wordle clone where you guess a word from a proverb, the proverb changes daily. 
+
 ![gameplay](./proverble.png)
 
 ### Frontend
