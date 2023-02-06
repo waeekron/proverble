@@ -40,7 +40,7 @@ To run the production build of the app:
 When the UI renders it sends a request for todays proverb to http://localhost:8080/today, it then simply splits the proverb and takes the middle word from it, which will be the one the user has to guess. If a user guesses correctly then the whole proverb is displayed.
 
 ### TODO
-- test :-)
+- tests :-)
 - docs
 - users
 - statistics: how many guesses todays guess has taken on average, user stats 
