@@ -13,7 +13,7 @@ import com.sanonta.sanontabackend.repositories.*;
 import java.time.LocalDate;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173/")
+@CrossOrigin(origins = { "http://localhost:5173/", "http://localhost:4173/" })
 public class ProverbController {
     private final ProverbRepository repository;
     private static Long currentProverb = 1L;
@@ -45,8 +45,11 @@ public class ProverbController {
     public Proverb today() {
         LocalDate today = LocalDate.now();
         int difference = start.compareTo(today);
-        if (difference != 0)
+        if (difference != 0) {
+            start = today;
             currentProverb++;
+        }
+
         return repository.findById(currentProverb).orElseThrow();
     }
 }

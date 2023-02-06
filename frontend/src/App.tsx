@@ -101,11 +101,15 @@ function App() {
     };
   });
 
+  //TODO: handle commas
   useEffect(() => {
     (async () => {
       const { content } = await proverbService.getToday();
       const c = content.split(' ');
-      const wordToGuess = c[Math.floor(c.length / 2)].toLowerCase();
+      const wordToGuess = c[Math.floor(c.length / 2)]
+        .toLowerCase()
+        .replace(',', ' ');
+
       setWordToGuess(wordToGuess);
       setProverb(content);
       setGuesses(() => {
