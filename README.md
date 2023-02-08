@@ -33,7 +33,7 @@ cd to `proverble/frontend`
 run `npm install && npm run dev`
 
 To run the production build of the app:
-`npm run buld`
+`npm run build`
 `npm run preview`
 
 ### How it works?
