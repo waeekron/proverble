@@ -1,6 +1,7 @@
 # proverble
 
 Wordle clone where you guess proverb's missing word.
+
 ![gameplay](./proverble.png)
 
 ### Frontend
