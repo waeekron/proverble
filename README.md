@@ -14,5 +14,6 @@ Wordle clone where you guess proverb's missing word.
 - Gin web framework
 - Postgres 
 
-
+## TODO
+make it work:)
 
